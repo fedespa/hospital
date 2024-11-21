@@ -1,0 +1,133 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String     @id @default(uuid())
+  name      String
+  email     String   @unique
+  emailVerified DateTime?
+  password  String
+  role      Role  @default(patient) 
+  image String?
+  createdAt DateTime @default(now())
+
+  // Relaciones
+  doctor  Doctor?
+  patient Patient?
+}
+
+model Doctor {
+  id           String    @id @default(uuid())
+  specialty    Specialty
+  availability String
+  userId       String   @unique
+  isVerified   Boolean
+  isActive     Boolean @default(true)
+
+  // Relación con User
+  user User @relation(fields: [userId], references: [id])
+
+  // Relaciones con Citas y Facturas
+  appointments Appointment[]
+  invoices     Invoice[]
+}
+
+model Patient {
+  id          String     @id @default(uuid())
+  userId      String     @unique
+  contactInfo String
+  allergies   String?
+  medications String?
+  isVerified  Boolean
+
+  // Relación con User
+  user User @relation(fields: [userId], references: [id])
+
+  // Relaciones con Citas, Historial Clínico y Facturas
+  appointments  Appointment[]
+  medicalRecord MedicalRecord?
+  invoices      Invoice[]
+}
+
+model Appointment {
+  id     String               @id @default(uuid())
+  date   DateTime
+  status AppointmentStatus
+  notes  String?
+
+  // Relaciones con Doctor y Patient
+  doctorId  String
+  patientId String
+  doctor    Doctor  @relation(fields: [doctorId], references: [id])
+  patient   Patient @relation(fields: [patientId], references: [id])
+}
+
+model MedicalRecord {
+  id          String    @id @default(uuid())
+  patientId   String    @unique
+  diagnostics String
+  history     String
+
+  // Relación con Patient
+  patient Patient @relation(fields: [patientId], references: [id])
+}
+
+model Invoice {
+  id            String           @id @default(uuid())
+  total         Float
+  date          DateTime      @default(now())
+  paymentStatus PaymentStatus
+
+  // Relaciones con Patient y Doctor
+  patientId String
+  doctorId  String?
+  patient   Patient @relation(fields: [patientId], references: [id])
+  doctor    Doctor? @relation(fields: [doctorId], references: [id])
+}
+
+model VerificationToken {
+  id String @id @default(cuid())
+  email String
+  token String @unique
+  expires DateTime
+  role Role @default(patient)
+
+  @@unique([email,token])
+}
+
+// Enums
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  CANCELLED
+}
+
+enum Role {
+  admin
+  patient
+  doctor
+}
+
+enum Specialty {
+  Cardiologist
+  Dermatologist
+  Neurologist
+  Pediatrician
+  Psychiatrist
+  Oncologist
+  Gynecologist
+  Ophthalmologist
+  
+}

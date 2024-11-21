@@ -2,16 +2,22 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
+
+const poppinsRegular = localFont({
+  src: "./fonts/Poppins-Regular.woff",
+  variable: "--font-poppins-regular",
+  weight: "400"
 });
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
-});
+const poppinsBold = localFont({
+  src: "./fonts/Poppins-Bold.woff",
+  variable: "--font-poppins-bold",
+  weight: "700"
+})
+const poppinsSemibold = localFont({
+  src: "./fonts/Poppins-SemiBold.woff",
+  variable: "--font-poppins-semibold",
+  weight: "600"
+})
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -23,10 +29,11 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${poppinsRegular.variable} ${poppinsBold.variable} ${poppinsSemibold.variable} antialiased`}
       >
         {children}
       </body>
