@@ -17,6 +17,8 @@ export default async function ListDoctorsPage() {
       }
     })
 
+    console.log(doctors)
+
   return (
     <section className="p-5">
       <DoctorsList doctors={doctors}/>
